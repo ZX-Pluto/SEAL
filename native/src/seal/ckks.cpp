@@ -24,8 +24,11 @@ namespace seal
             throw invalid_argument("unsupported scheme");
         }
 
+        // N: poly_modulus_degree 多项式的次数
         size_t coeff_count = context_data.parms().poly_modulus_degree();
+        // N/2 : slots 明文向量维度
         slots_ = coeff_count >> 1;
+        // logn : 返回 log(N)
         int logn = get_power_of_two(coeff_count);
 
         matrix_reps_index_map_ = allocate<size_t>(coeff_count, pool_);
@@ -40,6 +43,11 @@ namespace seal
             uint64_t index1 = (pos - 1) >> 1;
             uint64_t index2 = (m - pos - 1) >> 1;
 
+
+            /*
+                eg. set N = 8, i.e logN = 3, slots_ = 4, m = 16
+                1、index1 = 0, index2 =  7: matrix_reps_index_map_[0] = reverse_bits(0,3); matrix_reps_index_map_[4] = 
+            */
             // Set the bit-reversed locations
             matrix_reps_index_map_[i] = safe_cast<size_t>(reverse_bits(index1, logn));
             matrix_reps_index_map_[slots_ | i] = safe_cast<size_t>(reverse_bits(index2, logn));
